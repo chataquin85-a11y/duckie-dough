@@ -73,6 +73,7 @@
     <script>
         function changeTheme() { document.body.className = document.getElementById('bg-selector').value; }
         function updateAI() { addMessage("Modo IA cambiado a: " + document.getElementById('ai-personality').value, 'ai'); }
+        
         function addMessage(text, type) {
             const div = document.createElement('div');
             div.className = `message ${type}-msg`;
@@ -81,22 +82,33 @@
             container.appendChild(div);
             container.scrollTop = container.scrollHeight;
         }
+
         function sendSticker(emoji) { addMessage(emoji, 'user'); }
+
         function sendMessage() {
             const input = document.getElementById('user-input');
             if (input.value.trim() === "") return;
             addMessage(input.value, 'user');
             input.value = "";
-            setTimeout(() => addMessage("Analizando tu petición...", 'ai'), 1000);
+            // Simulamos la respuesta de la IA
+            setTimeout(() => addMessage("Procesando tu voz/texto...", 'ai'), 800);
         }
+
+        // Corrección: Asegurar que el Enter también envíe el mensaje
+        document.getElementById("user-input").addEventListener("keypress", (e) => { if (e.key === "Enter") sendMessage(); });
+
         function startVoice() {
             const rec = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
             rec.lang = 'es-ES';
             rec.start();
+            
             rec.onresult = (e) => {
-                document.getElementById('user-input').value = e.results[0][0].transcript;
-                sendMessage();
+                const transcript = e.results[0][0].transcript;
+                document.getElementById('user-input').value = transcript;
+                sendMessage(); // Envío automático configurado
             };
+            
+            rec.onerror = (e) => console.error("Error de voz:", e);
         }
     </script>
 </body>
