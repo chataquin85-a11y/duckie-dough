@@ -1,18 +1,17 @@
 <!DOCTYPE html>
-<html lang="es"> <!-- Puedes cambiar a 'en' aquí para inglés -->
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Duckie Talk</title>
     <style>
         body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f0f2f5; display: flex; flex-direction: column; height: 100vh; }
-        
         header { background: #fff; padding: 12px; display: flex; align-items: center; border-bottom: 1px solid #ddd; justify-content: space-between; }
-        .header-info { display: flex; align-items: center; gap: 12px; }
         .profile-avatar { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid #ddd; }
-        
-        #chat-container { flex: 1; padding: 20px; overflow-y: auto; background: #e5ddd5; }
-        
+        #chat-container { flex: 1; padding: 20px; overflow-y: auto; background: #e5ddd5; display: flex; flex-direction: column; gap: 10px; }
+        .message { padding: 10px 15px; border-radius: 15px; max-width: 80%; }
+        .user-msg { background: #dcf8c6; align-self: flex-end; }
+        .ai-msg { background: #fff; align-self: flex-start; }
         .input-area { background: #fff; padding: 10px; display: flex; align-items: center; gap: 10px; border-top: 1px solid #ddd; }
         .input-field { flex: 1; padding: 12px; border-radius: 25px; border: 1px solid #ccc; outline: none; }
         .btn { cursor: pointer; font-size: 22px; background: none; border: none; }
@@ -20,38 +19,55 @@
 </head>
 <body>
 
-    <header role="banner">
-        <div class="header-info">
-            <img src="IMG_0494.jpeg" alt="Duckie Talk Avatar" class="profile-avatar">
-            <div>
-                <strong>Duckie Talk ^+^_</strong><br>
-                <small id="status-text">Tu wingman digital</small>
-            </div>
+    <header>
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <img src="IMG_0494.jpeg" alt="Avatar" class="profile-avatar">
+            <div><strong>Duckie Talk ^+^_</strong></div>
         </div>
-        <button aria-label="Opciones" class="btn">🔗</button>
     </header>
 
-    <main id="chat-container" role="main"></main>
+    <main id="chat-container"></main>
 
-    <footer class="input-area" role="contentinfo">
-        <button class="btn" aria-label="Añadir">+</button>
-        <input type="text" id="user-input" class="input-field" placeholder="Habla o escribe..." aria-label="Mensaje">
-        <button class="btn" onclick="startVoice()" aria-label="Grabar voz">🎤</button>
+    <footer class="input-area">
+        <input type="text" id="user-input" class="input-field" placeholder="Escribe un mensaje...">
+        <button class="btn" onclick="sendMessage()">➤</button>
+        <button class="btn" onclick="startVoice()">🎤</button>
     </footer>
 
     <script>
-        // Configuración de idioma (Language Config)
-        const lang = 'es-ES'; // Puedes cambiar a 'en-US' para inglés
+        const chatContainer = document.getElementById('chat-container');
+        const userInput = document.getElementById('user-input');
+
+        function addMessage(text, type) {
+            const div = document.createElement('div');
+            div.className = `message ${type}-msg`;
+            div.innerText = text;
+            chatContainer.appendChild(div);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        function sendMessage() {
+            const text = userInput.value;
+            if (text.trim() === "") return;
+            addMessage(text, 'user');
+            userInput.value = "";
+
+            // Simulación de respuesta de tu wingman
+            setTimeout(() => {
+                addMessage("¡Entendido! Estoy procesando: " + text, 'ai');
+            }, 1000);
+        }
+
+        // Permitir enviar con la tecla Enter
+        userInput.addEventListener("keypress", (e) => { if (e.key === "Enter") sendMessage(); });
 
         function startVoice() {
             const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-            recognition.lang = lang;
+            recognition.lang = 'es-ES';
             recognition.start();
-            
             recognition.onresult = (event) => {
-                const transcript = event.results[0][0].transcript;
-                console.log("Input:", transcript);
-                document.getElementById('user-input').value = transcript;
+                userInput.value = event.results[0][0].transcript;
+                sendMessage(); // Envía automáticamente al terminar de hablar
             };
         }
     </script>
