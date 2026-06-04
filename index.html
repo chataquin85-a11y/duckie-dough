@@ -2,17 +2,23 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Duckie Guai-fai'v | Your Wingman</title>
+    <title>Duckie Guai-fai'v</title>
+    <style>
+        /* All your CSS goes here */
+        body { font-family: sans-serif; }
+    </style>
 </head>
 <body>
-    <div id="app">
-        <h1>What's good? I'm Duckie Guai-fai'v.</h1>
-        <div id="chat-container"></div>
-        <input type="text" id="user-input" placeholder="Say something to Guai-fai'v...">
-        <button id="send-btn">Send</button>
-    </div>
-    <!-- Note the type="module" here -->
-    <script type="module" src="app.js"></script>
+
+    <!-- Your HTML content goes here -->
+    <input type="text" id="user-input" placeholder="Type here...">
+    <button id="send-btn">Send</button>
+
+    <script>
+        // All your JavaScript goes here
+        document.getElementById('send-btn').addEventListener('click', () => {
+            alert("The button is working!");
+        });
+    </script>
 </body>
 </html>
