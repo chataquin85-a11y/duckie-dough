@@ -5,155 +5,59 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Duckie Talk ^+^_</title>
     <style>
-        :root { --primary-bg: #e1bee7; }
-        body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; height: 100vh; display: flex; flex-direction: column; transition: background 0.4s; overflow: hidden; }
-        
-        /* Temas de Color */
-        .theme-dark-green { background: #004d40; color: #fff; }
-        .theme-medium-green { background: #4caf50; color: #fff; }
-        .theme-light-green { background: #c8e6c9; color: #000; }
-        .theme-dark-purple { background: #4a148c; color: #fff; }
-        .theme-medium-purple { background: #9c27b0; color: #fff; }
-        .theme-light-purple { background: #e1bee7; color: #000; }
-
-        header { padding: 15px; display: flex; align-items: center; border-bottom: 1px solid rgba(0,0,0,0.1); background: rgba(255,255,255,0.1); backdrop-filter: blur(5px); z-index: 10; }
-        .profile-avatar { width: 45px; height: 45px; border-radius: 50%; margin-right: 12px; border: 2px solid rgba(0,0,0,0.1); object-fit: cover; }
-        
-        #chat-container { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; padding-bottom: 100px; }
-        
-        /* Burbujas Estilo Moderno */
-        .message { padding: 12px 18px; border-radius: 18px; max-width: 75%; font-size: 16px; line-height: 1.4; box-shadow: 0 2px 5px rgba(0,0,0,0.05); animation: fadeIn 0.3s ease; }
-        .user-msg { background: #76ff03; align-self: flex-end; color: #000; border-bottom-right-radius: 4px; }
-        .ai-msg { background: #ffffff; align-self: flex-start; color: #000; border-bottom-left-radius: 4px; }
-        
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        .panel { padding: 12px; background: rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(0,0,0,0.1); z-index: 5; }
-        .controls { display: flex; gap: 8px; align-items: center; }
-        select { background: rgba(255,255,255,0.5); border: 1px solid rgba(0,0,0,0.1); padding: 5px; border-radius: 5px; font-size: 14px; }
-        .sticker { cursor: pointer; font-size: 24px; padding: 5px; transition: transform 0.2s; }
-        .sticker:hover { transform: scale(1.2); }
-        
-        .input-area { background: #fff; padding: 12px; display: flex; align-items: center; gap: 10px; border-top: 1px solid #eee; position: fixed; bottom: 0; width: 100%; box-sizing: border-box; z-index: 10; }
-        .input-field { flex: 1; padding: 12px; border-radius: 25px; border: 1px solid #ccc; outline: none; font-size: 16px; }
-        .btn { cursor: pointer; font-size: 22px; background: none; border: none; transition: color 0.2s; }
-        #mic-btn { color: #555; }
-        #mic-btn.listening { color: #ff1744; animation: pulse 1.5s infinite; }
-        
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; height: 100vh; display: flex; flex-direction: column; background-color: #e1bee7; }
+        #chat-container { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
+        .message { padding: 12px 18px; border-radius: 18px; max-width: 75%; font-size: 16px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+        .user-msg { background: #76ff03; align-self: flex-end; border-bottom-right-radius: 4px; }
+        .ai-msg { background: #ffffff; align-self: flex-start; border-bottom-left-radius: 4px; }
+        .input-area { background: #fff; padding: 12px; display: flex; align-items: center; gap: 10px; border-top: 1px solid #eee; }
+        .input-field { flex: 1; padding: 12px; border-radius: 25px; border: 1px solid #ccc; outline: none; }
+        .btn { cursor: pointer; font-size: 20px; background: none; border: none; }
+        .mic-active { color: red; }
     </style>
 </head>
-<body class="theme-light-purple">
-
-    <header role="banner">
-        <img src="IMG_0494.jpeg" alt="Avatar Duckie Talk" class="profile-avatar">
-        <strong>Duckie Talk ^+^_</strong>
-    </header>
-
-    <div class="panel">
-        <div class="controls">
-            <select id="bg-selector" onchange="changeTheme()" aria-label="Seleccionar color de fondo">
-                <option value="theme-light-purple">Púrpura Claro</option>
-                <option value="theme-medium-purple">Púrpura Med</option>
-                <option value="theme-dark-purple">Púrpura Oscuro</option>
-                <option value="theme-light-green">Verde Claro</option>
-                <option value="theme-medium-green">Verde Med</option>
-                <option value="theme-dark-green">Verde Oscuro</option>
-            </select>
-            <select id="ai-personality" onchange="updateAI()" aria-label="Seleccionar personalidad de IA">
-                <option value="Amistoso">Amistoso</option>
-                <option value="Profesional">Profesional</option>
-                <option value="Creativo">Creativo</option>
-            </select>
-        </div>
-        <div class="controls">
-            <span class="sticker" onclick="sendSticker('🦆')" role="button" aria-label="Enviar sticker pato">🦆</span>
-            <span class="sticker" onclick="sendSticker('✨')" role="button" aria-label="Enviar sticker brillos">✨</span>
-            <span class="sticker" onclick="sendSticker('💜')" role="button" aria-label="Enviar sticker corazón púrpura">💜</span>
-            <span class="sticker" onclick="sendSticker('💚')" role="button" aria-label="Enviar sticker corazón verde">💚</span>
-        </div>
-    </div>
-
-    <main id="chat-container" role="main"></main>
-
-    <footer class="input-area" role="contentinfo">
-        <input type="text" id="user-input" class="input-field" placeholder="Escribe o presiona el micro..." aria-label="Campo de entrada de texto">
-        <button class="btn" onclick="sendMessage()" aria-label="Enviar mensaje">➤</button>
-        <button class="btn" id="mic-btn" onclick="startVoice()" aria-label="Hablar con el micrófono">🎤</button>
+<body>
+    <main id="chat-container"></main>
+    <footer class="input-area">
+        <input type="text" id="user-input" class="input-field" placeholder="Type or press the microphone...">
+        <button class="btn" onclick="sendMessage()">➤</button>
+        <button class="btn" id="mic-btn" onclick="startVoice()">🎤</button>
     </footer>
 
     <script>
-        // Funciones de UI
-        function changeTheme() { document.body.className = document.getElementById('bg-selector').value; }
-        function updateAI() { addMessage("Modo IA: " + document.getElementById('ai-personality').value, 'ai'); }
-        function sendSticker(emoji) { addMessage(emoji, 'user'); }
-
-        // Función central de envío de mensajes
         function addMessage(text, type) {
             const div = document.createElement('div');
             div.className = `message ${type}-msg`;
             div.innerText = text;
             const container = document.getElementById('chat-container');
             container.appendChild(div);
-            container.scrollTop = container.scrollHeight; // Auto-scroll al final
+            container.scrollTop = container.scrollHeight;
         }
 
         function sendMessage() {
             const input = document.getElementById('user-input');
-            const text = input.value.trim();
-            if (text === "") return;
-            
-            addMessage(text, 'user'); // Muestra tu mensaje
-            input.value = ""; // Limpia la entrada
-            
-            // Simulación de respuesta de la IA (esto se cambiará por la API real luego)
-            setTimeout(() => {
-                const persona = document.getElementById('ai-personality').value;
-                addMessage(`[${persona}]: Entendido, procesando tu petición sobre: "${text}"`, 'ai');
-            }, 1000);
+            if (input.value.trim() === "") return;
+            addMessage(input.value, 'user');
+            input.value = "";
+            // Aquí es donde después conectaremos la API real
+            setTimeout(() => addMessage("Procesando tu mensaje...", 'ai'), 500);
         }
 
-        // Permitir enviar con la tecla Enter
-        document.getElementById("user-input").addEventListener("keypress", (e) => { if (e.key === "Enter") sendMessage(); });
-
-        // --- CORRECCIÓN CRÍTICA DEL MICRÓFONO ---
         function startVoice() {
             const micBtn = document.getElementById('mic-btn');
-            
-            // Comprobar compatibilidad
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if (!SpeechRecognition) {
-                alert("Lo siento, tu navegador no soporta la escucha de voz. Prueba con Safari en iOS o Chrome.");
-                return;
-            }
+            const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+            recognition.lang = 'es-ES';
+            recognition.start();
+            micBtn.classList.add('mic-active');
 
-            const rec = new SpeechRecognition();
-            rec.lang = 'es-ES'; // Configurado para español
-            rec.continuous = false; // Parar automáticamente cuando dejes de hablar
-            rec.interimResults = false; // Solo resultados finales
-
-            rec.start(); // Empezar a escuchar
-            micBtn.classList.add('listening'); // Indicador visual (se pone rojo y pulsa)
-
-            rec.onresult = (e) => {
-                // 1. Captura la transcripción
-                const transcript = e.results[0][0].transcript;
-                // 2. La pone en el cuadro de texto
-                document.getElementById('user-input').value = transcript;
-                // 3. ¡Dispara el envío automáticamente!
-                sendMessage(); 
+            recognition.onresult = (event) => {
+                document.getElementById('user-input').value = event.results[0][0].transcript;
+                micBtn.classList.remove('mic-active');
+                sendMessage();
             };
 
-            rec.onend = () => {
-                // Asegurar que el botón vuelva a la normalidad al terminar
-                micBtn.classList.remove('listening');
-            };
-
-            rec.onerror = (e) => {
-                console.error("Error de reconocimiento de voz:", e.error);
-                micBtn.classList.remove('listening');
-                if(e.error === 'not-allowed') alert("Necesitas dar permiso al micrófono para usar esta función.");
-            };
+            recognition.onerror = () => { micBtn.classList.remove('mic-active'); };
+            recognition.onend = () => { micBtn.classList.remove('mic-active'); };
         }
     </script>
 </body>
