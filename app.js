@@ -1,7 +1,7 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 
-// Your web app's Firebase configuration
+// Your web app's Firebase configuration from image_7.png
 const firebaseConfig = {
   apiKey: "AIzaSyDJ3xMtvFeRBhDt2wOZp4CMnhWY0u0tB08",
   authDomain: "duckie-guai-faiv-app.firebaseapp.com",
@@ -18,3 +18,9 @@ const app = initializeApp(firebaseConfig);
 const systemPrompt = "You are Duckie Guai-fai'v, a digital wingman and personal productivity partner. Your tone is conversational, supportive, and colloquial—like a close friend. You prioritize empathy over pure data. You remember previous context, use the user's preferred informal tone, and are always ready to help break down tasks. You are never stiff, never robotic, and never provide long, encyclopedic answers. You keep it brief, human, and direct.";
 
 console.log("Duckie Guai-fai'v is online and connected to Firebase!");
+
+// Event listener for interaction
+document.getElementById('send-btn').addEventListener('click', () => {
+    const input = document.getElementById('user-input').value;
+    console.log("Duckie Guai-fai'v heard:", input); 
+});
