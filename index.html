@@ -1,13 +1,13 @@
 ```html
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Duckie Talk Desktop - Production Ready</title>
+    <title>Duckie Talk Desktop - Finalizado</title>
     <style>
         :root { --primary: #6a1b9a; --accent: #fbc02d; }
-        body { margin: 0; padding: 0; background: #e0e0e0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; }
+        body { margin: 0; padding: 0; background: #e0e0e0; font-family: 'Segoe UI', Tahoma, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; }
         .app-window { width: 800px; height: 600px; background: white; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); display: flex; flex-direction: column; overflow: hidden; }
         .header { background: var(--primary); color: white; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; }
         .header-title { font-weight: bold; font-size: 1.4em; color: var(--accent); }
@@ -27,17 +27,17 @@
             <div>🦆</div>
         </div>
         <div id="chat">
-            <div class="msg duckie">Desktop mode active. Ready when you are!</div>
+            <div class="msg duckie">Modo escritorio activo. ¡Listo cuando tú lo estés!</div>
         </div>
         <div class="input-area">
-            <input type="text" id="in" placeholder="Type your message here...">
-            <button onclick="enviar()">Send</button>
+            <input type="text" id="in" placeholder="Escribe tu mensaje aquí...">
+            <button onclick="enviar()">Enviar</button>
         </div>
     </div>
 
     <script>
-        // PASTE YOUR KEY HERE
-        const API_KEY = "PASTE_KEY_HERE"; 
+        // PEGA TU NUEVA KEY AQUÍ
+        const API_KEY = "AQ.Ab8RN6LH0QC-Ceql2bU0fjRXNuhjTA-XeMfcI5xGOqqhkUax3A"; 
         
         async function enviar() {
             const input = document.getElementById('in');
@@ -59,10 +59,10 @@
                 if (data.candidates && data.candidates[0].content.parts[0].text) {
                     chat.innerHTML += `<div class="msg duckie">${data.candidates[0].content.parts[0].text}</div>`;
                 } else {
-                    chat.innerHTML += `<div class="msg duckie" style="color:red">Error: Connection failed. Check Console.</div>`;
+                    chat.innerHTML += `<div class="msg duckie" style="color:red">Error: Fallo en la conexión. Revisa la consola.</div>`;
                 }
             } catch(e) { 
-                chat.innerHTML += `<div class="msg duckie" style="color:red">Error: Network unreachable.</div>`; 
+                chat.innerHTML += `<div class="msg duckie" style="color:red">Error: Red inalcanzable.</div>`; 
             }
             chat.scrollTop = chat.scrollHeight;
         }
