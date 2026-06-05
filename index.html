@@ -52,8 +52,6 @@
     <script>
         const API_KEY = "AIzaSyBruM7_YMp6qkYcez9J5Hb6h3BgCyhDyHg";
         const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
-        
-        // Memoria de la conversación
         let conversationHistory = [];
 
         function addMessage(text, type) {
@@ -63,6 +61,7 @@
             div.innerText = text;
             container.appendChild(div);
             container.scrollTop = container.scrollHeight;
+            return div;
         }
 
         async function sendMessage() {
@@ -74,7 +73,7 @@
             addMessage(text, 'user');
             conversationHistory.push({ role: "user", parts: [{ text: text }] });
             input.value = "";
-            addMessage("Pensando...", 'ai');
+            const loadingMsg = addMessage("Pensando...", 'ai');
             
             try {
                 const response = await fetch(API_URL, {
@@ -82,21 +81,23 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ 
                         contents: conversationHistory,
-                        systemInstruction: { parts: [{ text: `Actúa como un asistente ${mode} llamado Duckie Talk.` }] }
+                        generationConfig: { temperature: 0.7 }
                     })
                 });
-                const data = await response.json();
-                document.getElementById('chat-container').lastElementChild.remove();
                 
-                if (data.candidates && data.candidates[0].content.parts[0].text) {
+                const data = await response.json();
+                loadingMsg.remove();
+                
+                if (data.candidates && data.candidates[0].content) {
                     const aiText = data.candidates[0].content.parts[0].text;
                     addMessage(aiText, 'ai');
                     conversationHistory.push({ role: "model", parts: [{ text: aiText }] });
                 } else {
-                    addMessage("No recibí respuesta.", 'ai');
+                    addMessage("La IA no respondió correctamente.", 'ai');
                 }
             } catch (e) {
-                document.getElementById('chat-container').lastElementChild.innerText = "Error: Verifica tu conexión.";
+                loadingMsg.remove();
+                addMessage("Error de conexión: " + e.message, 'ai');
             }
         }
 
@@ -109,7 +110,7 @@
                     document.getElementById('user-input').value = e.results[0][0].transcript;
                     sendMessage();
                 };
-            } catch(e) { addMessage("Voz no soportada.", 'ai'); }
+            } catch(e) { addMessage("Voz no disponible.", 'ai'); }
         }
     </script>
 </body>
