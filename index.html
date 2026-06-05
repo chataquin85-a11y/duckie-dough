@@ -5,57 +5,62 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Duckie Talk Pro - Profesional</title>
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        
-        const firebaseConfig = { apiKey: "AIzaSy...", projectId: "duckie-talk-pro" }; // Configura tus credenciales reales
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const auth = getAuth(app);
-        signInAnonymously(auth);
-
-        window.guardarConversacion = async (u, a) => {
-            await addDoc(collection(db, "conversations"), { user: u, ai: a, timestamp: serverTimestamp() });
-        };
-    </script>
     <style>
-        body { margin: 0; background: #4a148c; height: 100vh; display: flex; justify-content: center; align-items: center; font-family: sans-serif; }
-        .app-container { width: 95%; max-width: 600px; height: 90vh; background: #fff; display: flex; flex-direction: column; border-radius: 20px; overflow: hidden; position: relative; }
+        :root { --bg: #ffffff; --text: #333; --primary: #4a148c; }
+        .dark { --bg: #121212; --text: #eee; --primary: #7b1fa2; }
+        body { margin: 0; background: var(--primary); font-family: sans-serif; height: 100vh; display: flex; justify-content: center; align-items: center; }
+        .app-container { width: 100%; max-width: 500px; height: 90vh; background: var(--bg); color: var(--text); display: flex; flex-direction: column; border-radius: 20px; overflow: hidden; position: relative; transition: all 0.3s; }
         .header { padding: 15px; display: flex; justify-content: space-between; border-bottom: 1px solid #eee; }
         #chat { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
         .message { padding: 10px 15px; border-radius: 15px; max-width: 80%; }
-        .u { background: #6a1b9a; color: white; align-self: flex-end; }
-        .a { background: #eee; align-self: flex-start; }
-        .controls { padding: 15px; border-top: 1px solid #eee; display: flex; gap: 10px; align-items: center; }
-        input { flex: 1; padding: 10px; border-radius: 20px; border: 1px solid #ccc; }
-        .btn { border: none; padding: 10px; border-radius: 20px; cursor: pointer; }
-        #sticker-panel { display: none; position: absolute; top: 60px; right: 20px; background: white; border: 1px solid #ccc; padding: 10px; border-radius: 10px; }
+        .u { background: var(--primary); color: white; align-self: flex-end; }
+        .a { background: #eee; color: #333; align-self: flex-start; }
+        .bottom-bar { padding: 15px; border-top: 1px solid #eee; display: flex; gap: 10px; align-items: center; }
+        input { flex: 1; padding: 12px; border-radius: 20px; border: 1px solid #ccc; background: var(--bg); color: var(--text); }
+        .btn { border: none; padding: 10px; border-radius: 20px; cursor: pointer; background: #e1bee7; }
+        #settings-panel, #sticker-panel { display: none; position: absolute; top: 60px; left: 10px; right: 10px; background: white; color: #333; padding: 20px; border-radius: 15px; z-index: 10; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
     </style>
 </head>
 <body>
-    <div class="app-container">
+    <div class="app-container" id="app">
         <div class="header">
-            <div>
-                <button onclick="document.getElementById('settings').style.display='block'">⚙️</button>
-                <select id="lang"><option value="es">Español</option><option value="en">English</option></select>
-            </div>
+            <button onclick="document.getElementById('settings-panel').style.display='block'">⚙️</button>
             <button onclick="document.getElementById('sticker-panel').style.display='block'">Stickers 🦆</button>
         </div>
-        <div id="sticker-panel">🦆 ✨ 🎉 🎈</div>
-        <div id="settings" style="display:none; padding:10px;">Idioma: <select id="lang2"><option value="es">Español</option><option value="en">English</option></select><button onclick="this.parentElement.style.display='none'">Cerrar</button></div>
+
+        <div id="settings-panel">
+            <h3>Ajustes</h3>
+            <label>Idioma: </label>
+            <select id="lang"><option value="es">Español</option><option value="en">English</option></select>
+            <br><br>
+            <label>Tema: </label>
+            <button onclick="document.body.className='dark'">Oscuro</button>
+            <button onclick="document.body.className=''">Claro</button>
+            <br><br><button onclick="this.parentElement.style.display='none'">Cerrar</button>
+        </div>
+
+        <div id="sticker-panel">
+            <h3>Stickers 🦆</h3>
+            <div style="font-size: 30px; cursor: pointer;" onclick="enviarSticker('🦆')">🦆</div>
+            <div style="font-size: 30px; cursor: pointer;" onclick="enviarSticker('🐤')">🐤</div>
+            <div style="font-size: 30px; cursor: pointer;" onclick="enviarSticker('✨')">✨</div>
+            <div style="font-size: 30px; cursor: pointer;" onclick="enviarSticker('🎈')">🎈</div>
+            <button onclick="this.parentElement.style.display='none'">Cerrar</button>
+        </div>
+
         <div id="chat"></div>
-        <div class="controls">
-            <button class="btn" onclick="enviarMensaje()">Enviar</button>
-            <input type="text" id="in" placeholder="Escribe algo...">
-            <button class="btn" id="mic-btn">🎤</button>
+
+        <div class="bottom-bar">
+            <button class="btn" onclick="enviar()">Enviar</button>
+            <input type="text" id="in" placeholder="Dile algo a Duckie...">
+            <button class="btn" id="mic">🎤</button>
         </div>
     </div>
+
     <script>
         const API_KEY = "AIzaSyBruM7_YMp6qkYcez9J5Hb6h3BgCyhDyHg";
         
-        async function enviarMensaje() {
+        async function enviar() {
             const input = document.getElementById('in');
             const chat = document.getElementById('chat');
             const texto = input.value;
@@ -71,15 +76,19 @@
                 const data = await res.json();
                 const resp = data.candidates[0].content.parts[0].text;
                 chat.innerHTML += `<div class="message a">${resp}</div>`;
-                window.guardarConversacion(texto, resp);
-            } catch(e) { chat.innerHTML += `<div class="message a">Error.</div>`; }
+            } catch(e) { chat.innerHTML += `<div class="message a">Duckie está procesando, intenta de nuevo.</div>`; }
         }
 
-        // Voz a texto
-        const mic = document.getElementById('mic-btn');
+        function enviarSticker(s) {
+            document.getElementById('chat').innerHTML += `<div class="message u">${s}</div>`;
+            document.getElementById('sticker-panel').style.display='none';
+        }
+
+        const mic = document.getElementById('mic');
         const rec = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        rec.lang = 'es-ES';
         rec.onresult = (e) => { document.getElementById('in').value = e.results[0][0].transcript; };
-        mic.onclick = () => rec.start();
+        mic.onclick = () => { rec.start(); };
     </script>
 </body>
 </html>
