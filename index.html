@@ -4,37 +4,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Duckie Talk Pro - Producción</title>
+    <title>Duckie Talk Pro - Interfaz Profesional</title>
     <style>
-        :root { --bg: #ffffff; --text: #333; --primary: #4a148c; --bubble: #f0f0f0; }
+        :root { --bg: #ffffff; --primary: #4a148c; --text: #333; --bubble: #f0f0f0; }
         .dark { --bg: #1a1a1a; --text: #f0f0f0; --primary: #7b1fa2; --bubble: #333; }
+        
         body { margin: 0; background: #222; font-family: -apple-system, sans-serif; height: 100vh; display: flex; justify-content: center; align-items: center; }
-        .app-container { width: 100%; max-width: 500px; height: 90vh; background: var(--bg); color: var(--text); display: flex; flex-direction: column; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); transition: background 0.3s; }
         
-        /* Header & Settings */
-        .header { padding: 15px; display: flex; justify-content: space-between; border-bottom: 1px solid #ddd; }
-        #panel { display: none; position: absolute; top: 60px; left: 10px; right: 10px; background: white; color: #333; padding: 20px; border-radius: 15px; z-index: 100; box-shadow: 0 5px 20px rgba(0,0,0,0.3); }
-        
-        /* Chat Area */
+        .app-container { 
+            width: 100%; max-width: 500px; height: 90vh; background: var(--bg); color: var(--text); 
+            display: flex; flex-direction: column; border-radius: 20px; overflow: hidden; 
+            box-shadow: 0 10px 40px rgba(0,0,0,0.6); position: relative;
+        }
+
+        /* Header con Engranaje */
+        .header { padding: 15px 20px; display: flex; justify-content: space-between; border-bottom: 1px solid #ddd; align-items: center; }
+        .icon-btn { border: none; background: none; font-size: 24px; cursor: pointer; }
+
+        /* Panel de Ajustes (Engranaje) */
+        #panel { 
+            display: none; position: absolute; top: 60px; left: 20px; right: 20px; 
+            background: white; color: #333; padding: 20px; border-radius: 15px; 
+            z-index: 100; box-shadow: 0 5px 20px rgba(0,0,0,0.3); 
+        }
+
+        /* Chat */
         #chat { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
-        .message { padding: 12px 18px; border-radius: 18px; max-width: 80%; }
+        .message { padding: 12px 18px; border-radius: 18px; max-width: 80%; font-size: 15px; }
         .u { background: var(--primary); color: white; align-self: flex-end; }
         .a { background: var(--bubble); align-self: flex-start; }
-        
-        /* Footer/Input */
+
+        /* Footer */
         .bottom-bar { padding: 15px; border-top: 1px solid #ddd; display: flex; gap: 10px; align-items: center; background: var(--bg); }
-        input { flex: 1; padding: 12px; border-radius: 25px; border: 1px solid #ccc; background: var(--bg); color: var(--text); }
-        .icon-btn { border: none; background: none; font-size: 20px; cursor: pointer; padding: 5px; }
+        input { flex: 1; padding: 12px; border-radius: 25px; border: 1px solid #ccc; background: var(--bg); color: var(--text); outline: none; }
         
-        /* Ad Placement Base */
-        .ad-space { height: 50px; background: #eee; text-align: center; font-size: 10px; color: #999; display: flex; align-items: center; justify-content: center; }
+        /* Ad Space */
+        .ad-container { height: 60px; background: #fdfdfd; border-top: 1px solid #eee; display: flex; align-items: center; justify-content: center; font-size: 12px; color: #aaa; }
     </style>
 </head>
 <body>
     <div class="app-container">
         <div class="header">
             <button class="icon-btn" onclick="document.getElementById('panel').style.display='block'">⚙️</button>
-            <button class="icon-btn" onclick="alert('Stickers Panel')">🦆</button>
+            <button class="icon-btn">🦆</button>
         </div>
 
         <div id="panel">
@@ -49,12 +61,10 @@
         </div>
 
         <div id="chat"></div>
-        
-        <div class="ad-space">Espacio reservado para Publicidad</div>
-
+        <div class="ad-container">Publicidad - Monetización Activa</div>
         <div class="bottom-bar">
-            <button class="icon-btn" onclick="enviar()">Send</button>
-            <input type="text" id="in" placeholder="Duckie está listo...">
+            <button class="icon-btn" onclick="enviar()">➤</button>
+            <input type="text" id="in" placeholder="Escribe algo...">
             <button class="icon-btn" id="mic">🎤</button>
         </div>
     </div>
@@ -79,7 +89,7 @@
                 const data = await response.json();
                 const respuesta = data.candidates[0].content.parts[0].text;
                 chat.innerHTML += `<div class="message a">${respuesta}</div>`;
-            } catch(e) { chat.innerHTML += `<div class="message a">Error de conexión.</div>`; }
+            } catch(e) { chat.innerHTML += `<div class="message a">Duckie está trabajando.</div>`; }
         }
 
         const rec = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
