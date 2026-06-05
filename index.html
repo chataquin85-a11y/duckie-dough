@@ -4,21 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Duckie Talk Pro - Hito 4 (Desktop/Mobile)</title>
-    <!-- Firebase SDK -->
+    <title>Duckie Talk Pro - Profesional</title>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-
-        const firebaseConfig = {
-            apiKey: "TU_API_KEY_FIREBASE",
-            authDomain: "TU_PROJECT_ID.firebaseapp.com",
-            projectId: "TU_PROJECT_ID",
-            storageBucket: "TU_PROJECT_ID.appspot.com",
-            messagingSenderId: "TU_ID",
-            appId: "TU_APP_ID"
-        };
+        
+        const firebaseConfig = { apiKey: "AIzaSy...", projectId: "duckie-talk-pro" }; // Configura tus credenciales reales
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const auth = getAuth(app);
@@ -29,80 +21,65 @@
         };
     </script>
     <style>
-        * { box-sizing: border-box; }
-        body { margin: 0; font-family: -apple-system, sans-serif; height: 100vh; background: #4a148c; display: flex; justify-content: center; align-items: center; }
-        
-        .app-container { 
-            width: 95%; height: 95%; max-width: 1000px; 
-            background: #fff; display: flex; flex-direction: column; 
-            border-radius: 20px; overflow: hidden; box-shadow: 0 10px 50px rgba(0,0,0,0.5);
-        }
-        
-        .header { padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; background: #fdfdfd; }
-        .left-controls { display: flex; gap: 10px; align-items: center; }
-        .btn-sm { padding: 8px 12px; font-size: 13px; cursor: pointer; border-radius: 8px; border: 1px solid #ddd; background: #fff; }
-        
-        #chat { flex: 1; padding: 30px; overflow-y: auto; display: flex; flex-direction: column; gap: 20px; background: #fafafa; }
-        .message { padding: 15px 20px; border-radius: 20px; max-width: 70%; font-size: 16px; }
+        body { margin: 0; background: #4a148c; height: 100vh; display: flex; justify-content: center; align-items: center; font-family: sans-serif; }
+        .app-container { width: 95%; max-width: 600px; height: 90vh; background: #fff; display: flex; flex-direction: column; border-radius: 20px; overflow: hidden; position: relative; }
+        .header { padding: 15px; display: flex; justify-content: space-between; border-bottom: 1px solid #eee; }
+        #chat { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+        .message { padding: 10px 15px; border-radius: 15px; max-width: 80%; }
         .u { background: #6a1b9a; color: white; align-self: flex-end; }
-        .a { background: #eee; color: #333; align-self: flex-start; }
-        .typing { font-size: 14px; color: #888; font-style: italic; padding-left: 20px; }
-
-        .input-area { padding: 20px; display: flex; gap: 15px; border-top: 1px solid #eee; align-items: center; background: #fff; }
-        .send-btn { background: #4a148c; color: white; padding: 12px 25px; border-radius: 25px; border: none; cursor: pointer; }
-        input { flex: 1; padding: 15px; border-radius: 25px; border: 1px solid #ccc; outline: none; }
-        .mic-btn { background: #e1bee7; border-radius: 50%; width: 50px; height: 50px; border: none; font-size: 22px; cursor: pointer; }
+        .a { background: #eee; align-self: flex-start; }
+        .controls { padding: 15px; border-top: 1px solid #eee; display: flex; gap: 10px; align-items: center; }
+        input { flex: 1; padding: 10px; border-radius: 20px; border: 1px solid #ccc; }
+        .btn { border: none; padding: 10px; border-radius: 20px; cursor: pointer; }
+        #sticker-panel { display: none; position: absolute; top: 60px; right: 20px; background: white; border: 1px solid #ccc; padding: 10px; border-radius: 10px; }
     </style>
 </head>
 <body>
     <div class="app-container">
         <div class="header">
-            <div class="left-controls">
-                <button class="btn-sm" onclick="alert('Configuración')">⚙️</button>
-                <select id="lang" class="btn-sm"><option value="es">ES</option><option value="en">EN</option></select>
-                <button class="btn-sm">Classic</button>
+            <div>
+                <button onclick="document.getElementById('settings').style.display='block'">⚙️</button>
+                <select id="lang"><option value="es">Español</option><option value="en">English</option></select>
             </div>
-            <button class="btn-sm">Stickers 🦆</button>
+            <button onclick="document.getElementById('sticker-panel').style.display='block'">Stickers 🦆</button>
         </div>
+        <div id="sticker-panel">🦆 ✨ 🎉 🎈</div>
+        <div id="settings" style="display:none; padding:10px;">Idioma: <select id="lang2"><option value="es">Español</option><option value="en">English</option></select><button onclick="this.parentElement.style.display='none'">Cerrar</button></div>
         <div id="chat"></div>
-        <div class="input-area">
-            <button class="send-btn" onclick="enviarMensaje()">Enviar</button>
+        <div class="controls">
+            <button class="btn" onclick="enviarMensaje()">Enviar</button>
             <input type="text" id="in" placeholder="Escribe algo...">
-            <button class="mic-btn">🎤</button>
+            <button class="btn" id="mic-btn">🎤</button>
         </div>
     </div>
     <script>
         const API_KEY = "AIzaSyBruM7_YMp6qkYcez9J5Hb6h3BgCyhDyHg";
-        const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
-
+        
         async function enviarMensaje() {
             const input = document.getElementById('in');
-            const texto = input.value.trim();
-            if(!texto) return;
             const chat = document.getElementById('chat');
+            const texto = input.value;
+            if(!texto) return;
             chat.innerHTML += `<div class="message u">${texto}</div>`;
             input.value = "";
             
-            const typing = document.createElement('div');
-            typing.className = 'typing';
-            typing.innerText = "Duckie escribiendo...";
-            chat.appendChild(typing);
-
             try {
-                const res = await fetch(API_URL, { 
-                    method: 'POST', headers: {'Content-Type': 'application/json'}, 
-                    body: JSON.stringify({ contents: [{ parts: [{ text: texto }] }] }) 
+                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
+                    method: 'POST', headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ contents: [{ parts: [{ text: texto }] }] })
                 });
                 const data = await res.json();
-                typing.remove();
-                if(data.candidates) {
-                    const resp = data.candidates[0].content.parts[0].text;
-                    chat.innerHTML += `<div class="message a">${resp}</div>`;
-                    if(window.guardarConversacion) window.guardarConversacion(texto, resp);
-                }
-            } catch(e) { typing.remove(); }
-            chat.scrollTop = chat.scrollHeight;
+                const resp = data.candidates[0].content.parts[0].text;
+                chat.innerHTML += `<div class="message a">${resp}</div>`;
+                window.guardarConversacion(texto, resp);
+            } catch(e) { chat.innerHTML += `<div class="message a">Error.</div>`; }
         }
+
+        // Voz a texto
+        const mic = document.getElementById('mic-btn');
+        const rec = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        rec.onresult = (e) => { document.getElementById('in').value = e.results[0][0].transcript; };
+        mic.onclick = () => rec.start();
     </script>
 </body>
 </html>
