@@ -10,18 +10,23 @@
         :root { --bg-color: #f0ede5; --chat-bg: #ffffff; }
         body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; height: 100vh; display: flex; flex-direction: column; background: var(--bg-color); transition: background 0.3s; }
         
-        .header { padding: 12px; display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.7); border-bottom: 1px solid #ddd; }
-        .controls { display: flex; gap: 8px; align-items: center; }
-        select { padding: 8px; border-radius: 10px; border: 1px solid #ccc; background: white; cursor: pointer; font-size: 14px; }
+        /* Layout de Escritorio Reforzado */
+        @media (min-width: 768px) {
+            body { max-width: 800px; margin: 0 auto; border-left: 1px solid #ddd; border-right: 1px solid #ddd; box-shadow: 0 0 20px rgba(0,0,0,0.05); }
+        }
+
+        .header { padding: 15px; display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.8); border-bottom: 1px solid #ddd; }
+        .controls { display: flex; gap: 10px; align-items: center; }
+        select { padding: 8px; border-radius: 10px; border: 1px solid #ccc; background: white; cursor: pointer; }
         
-        #chat-container { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
-        .message { padding: 12px 16px; border-radius: 18px; max-width: 85%; font-size: 15px; background: var(--chat-bg); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        #chat-container { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
+        .message { padding: 12px 18px; border-radius: 18px; max-width: 85%; font-size: 16px; background: var(--chat-bg); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
         .user-msg { background: #dcf8c6; align-self: flex-end; border-bottom-right-radius: 4px; }
         .ai-msg { background: var(--chat-bg); align-self: flex-start; border-bottom-left-radius: 4px; }
         
-        .input-area { padding: 12px; background: white; display: flex; gap: 10px; border-top: 1px solid #ddd; align-items: center; }
-        input { flex: 1; padding: 12px; border-radius: 25px; border: 1px solid #ccc; outline: none; font-size: 16px; }
-        .btn { padding: 12px 18px; border-radius: 25px; background: #075e54; color: white; border: none; cursor: pointer; font-weight: bold; }
+        .input-area { padding: 15px; background: white; display: flex; gap: 10px; border-top: 1px solid #ddd; align-items: center; }
+        input { flex: 1; padding: 14px; border-radius: 25px; border: 1px solid #ccc; outline: none; font-size: 16px; }
+        .btn { padding: 12px 20px; border-radius: 25px; background: #075e54; color: white; border: none; cursor: pointer; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -35,19 +40,18 @@
             <select id="ai-mode">
                 <option value="Amistoso">Amistoso</option>
                 <option value="Profesional">Profesional</option>
-                <option value="Creativo">Creativo</option>
             </select>
         </div>
         <div class="controls">
-            <span onclick="addMessage('🦆', 'user')" style="cursor:pointer; font-size: 20px;">🦆</span>
-            <span onclick="addMessage('✨', 'user')" style="cursor:pointer; font-size: 20px;">✨</span>
+            <span onclick="addMessage('🦆', 'user')" style="cursor:pointer; font-size: 22px;">🦆</span>
+            <span onclick="addMessage('✨', 'user')" style="cursor:pointer; font-size: 22px;">✨</span>
         </div>
     </div>
     
     <div id="chat-container"></div>
     
     <div class="input-area">
-        <input type="text" id="user-input" placeholder="Dile algo a Duckie...">
+        <input type="text" id="user-input" placeholder="Escribe tu mensaje...">
         <button class="btn" onclick="sendMessage()">➤</button>
         <button class="btn" onclick="startVoice()">🎤</button>
     </div>
@@ -88,21 +92,25 @@
                 if (data.candidates && data.candidates[0].content.parts[0].text) {
                     addMessage(data.candidates[0].content.parts[0].text, 'ai');
                 } else {
-                    addMessage("Error en la respuesta.", 'ai');
+                    addMessage("Error de respuesta.", 'ai');
                 }
             } catch (e) {
-                document.getElementById('chat-container').lastElementChild.innerText = "Error de conexión.";
+                document.getElementById('chat-container').lastElementChild.innerText = "Error de red. Recarga.";
             }
         }
 
         function startVoice() {
-            const rec = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-            rec.lang = 'es-ES';
-            rec.start();
-            rec.onresult = (e) => {
-                document.getElementById('user-input').value = e.results[0][0].transcript;
-                sendMessage();
-            };
+            try {
+                const rec = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+                rec.lang = 'es-ES';
+                rec.start();
+                rec.onresult = (e) => {
+                    document.getElementById('user-input').value = e.results[0][0].transcript;
+                    sendMessage();
+                };
+            } catch(e) {
+                addMessage("Voz no disponible en este navegador.", 'ai');
+            }
         }
     </script>
 </body>
