@@ -7,49 +7,20 @@
     <title>Duckie Talk ^+^_</title>
     <style>
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        
-        /* Configuración de Fondo HD */
         :root { --bg-image: url('https://images.unsplash.com/photo-1554034483-04fda0d3507b?auto=format&fit=crop&q=80&w=2000'); }
-        
-        body { 
-            margin: 0; 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
-            height: 100vh; 
-            display: flex; 
-            flex-direction: column; 
-            background-image: var(--bg-image);
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-attachment: fixed;
-            transition: background 0.3s; 
-        }
-        
-        .app-container {
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.9);
-            width: 100%;
-        }
-
-        @media (min-width: 768px) {
-            .app-container { max-width: 800px; margin: 0 auto; border-left: 1px solid #ddd; border-right: 1px solid #ddd; box-shadow: 0 0 20px rgba(0,0,0,0.2); }
-        }
-
+        body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; height: 100vh; display: flex; flex-direction: column; background-image: var(--bg-image); background-size: cover; background-position: center; background-repeat: no-repeat; background-attachment: fixed; }
+        .app-container { display: flex; flex-direction: column; height: 100%; background: rgba(255, 255, 255, 0.9); width: 100%; }
+        @media (min-width: 768px) { .app-container { max-width: 800px; margin: 0 auto; border-left: 1px solid #ddd; border-right: 1px solid #ddd; box-shadow: 0 0 20px rgba(0,0,0,0.2); } }
         .header { padding: 15px 20px; display: flex; align-items: center; justify-content: space-between; background: #ffffff; border-bottom: 1px solid #e0e0e0; }
         .controls { display: flex; gap: 10px; align-items: center; }
-        select { padding: 8px 12px; border-radius: 8px; border: 1px solid #ccc; background: #f9f9f9; cursor: pointer; font-size: 14px; }
-        
+        select { padding: 8px 12px; border-radius: 8px; border: 1px solid #ccc; background: #f9f9f9; cursor: pointer; }
         #chat-container { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
         .message { padding: 12px 18px; border-radius: 18px; max-width: 85%; font-size: 16px; background: #ffffff; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
         .user-msg { background: #dcf8c6; align-self: flex-end; border-bottom-right-radius: 4px; }
         .ai-msg { background: #ffffff; align-self: flex-start; border-bottom-left-radius: 4px; }
-        
         .input-area { padding: 15px; background: #ffffff; display: flex; gap: 10px; border-top: 1px solid #ddd; align-items: center; }
         input { flex: 1; padding: 14px; border-radius: 25px; border: 1px solid #ccc; outline: none; font-size: 16px; }
-        /* Botones redondos para el micrófono y enviar */
-        .btn { padding: 12px; width: 50px; height: 50px; border-radius: 50%; background: #075e54; color: white; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+        .btn { padding: 0; width: 50px; height: 50px; border-radius: 50%; background: #075e54; color: white; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 20px; }
     </style>
 </head>
 <body>
@@ -71,20 +42,16 @@
                 <span onclick="addMessage('✨', 'user')" style="cursor:pointer; font-size: 22px;">✨</span>
             </div>
         </div>
-        
         <div id="chat-container"></div>
-        
         <div class="input-area">
-            <input type="text" id="user-input" placeholder="Escribe...">
+            <input type="text" id="user-input" placeholder="Escribe aquí...">
             <button class="btn" onclick="sendMessage()">➤</button>
             <button class="btn" onclick="startVoice()">🎤</button>
         </div>
     </div>
-
     <script>
         const API_KEY = "AIzaSyBruM7_YMp6qkYcez9J5Hb6h3BgCyhDyHg";
         const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
-
         function addMessage(text, type) {
             const container = document.getElementById('chat-container');
             const div = document.createElement('div');
@@ -93,7 +60,6 @@
             container.appendChild(div);
             container.scrollTop = container.scrollHeight;
         }
-
         async function sendMessage() {
             const input = document.getElementById('user-input');
             const mode = document.getElementById('ai-mode').value;
@@ -101,7 +67,7 @@
             if (!text) return;
             addMessage(text, 'user');
             input.value = "";
-            addMessage("...", 'ai');
+            addMessage("Pensando...", 'ai');
             try {
                 const response = await fetch(API_URL, {
                     method: 'POST',
@@ -110,22 +76,23 @@
                 });
                 const data = await response.json();
                 document.getElementById('chat-container').lastElementChild.remove();
-                if (data.candidates) addMessage(data.candidates[0].content.parts[0].text, 'ai');
+                if (data.candidates && data.candidates[0].content.parts[0].text) {
+                    addMessage(data.candidates[0].content.parts[0].text, 'ai');
+                } else {
+                    addMessage("No recibí respuesta, intenta de nuevo.", 'ai');
+                }
             } catch (e) {
-                document.getElementById('chat-container').lastElementChild.innerText = "Error.";
+                document.getElementById('chat-container').lastElementChild.innerText = "Error de red. Revisa tu conexión.";
             }
         }
-
         function startVoice() {
-            try {
-                const rec = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-                rec.lang = 'es-ES';
-                rec.start();
-                rec.onresult = (e) => {
-                    document.getElementById('user-input').value = e.results[0][0].transcript;
-                    sendMessage();
-                };
-            } catch(e) { addMessage("Voz no disponible.", 'ai'); }
+            const rec = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+            rec.lang = 'es-ES';
+            rec.start();
+            rec.onresult = (e) => {
+                document.getElementById('user-input').value = e.results[0][0].transcript;
+                sendMessage();
+            };
         }
     </script>
 </body>
