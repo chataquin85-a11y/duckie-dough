@@ -4,34 +4,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Duckie Talk Pro - Polished</title>
+    <title>Duckie Talk Pro - Fully Operational</title>
     <style>
-        :root { --bg: #ffffff; --text: #333; --primary: #6a1b9a; --accent: #fbc02d; --bubble: #e1bee7; }
-        .dark { --bg: #121212; --text: #f0f0f0; --primary: #9c27b0; --bubble: #37474f; }
+        :root { --bg: #121212; --text: #ffffff; --primary: #6a1b9a; --accent: #fbc02d; --bubble: #37474f; }
+        body { margin: 0; background: #222; font-family: sans-serif; height: 100vh; display: flex; justify-content: center; align-items: center; }
+        .app-container { width: 100%; max-width: 500px; height: 90vh; background: var(--bg); color: var(--text); display: flex; flex-direction: column; border-radius: 25px; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
         
-        body { margin: 0; background: #333; font-family: 'Segoe UI', sans-serif; height: 100vh; display: flex; justify-content: center; align-items: center; }
-        .app-container { width: 100%; max-width: 500px; height: 90vh; background: var(--bg); color: var(--text); display: flex; flex-direction: column; border-radius: 25px; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.5); transition: all 0.3s; }
+        .header { padding: 20px; background: var(--primary); display: flex; justify-content: space-between; align-items: center; }
+        .title { font-size: 20px; font-weight: bold; color: var(--accent); }
+        .icon-btn { border: none; background: rgba(255,255,255,0.2); color: white; padding: 10px; border-radius: 50%; cursor: pointer; }
         
-        /* Header */
-        .header { padding: 20px; background: var(--primary); color: white; display: flex; justify-content: space-between; align-items: center; }
-        .title { font-size: 22px; font-weight: bold; color: var(--accent); }
-        .icon-btn { border: none; background: rgba(255,255,255,0.2); color: white; padding: 10px; border-radius: 50%; font-size: 18px; cursor: pointer; }
+        #panel { display: none; position: absolute; top: 80px; left: 10px; right: 10px; background: #fff; color: #333; padding: 20px; border-radius: 20px; z-index: 100; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
         
-        /* Panel */
-        #panel { display: none; position: absolute; top: 80px; left: 10px; right: 10px; background: white; color: #333; padding: 20px; border-radius: 20px; z-index: 100; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
-        
-        /* Chat */
         #chat { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
         .message { padding: 12px 18px; border-radius: 15px; max-width: 80%; font-size: 15px; }
-        .u { background: var(--primary); color: white; align-self: flex-end; }
+        .u { background: var(--primary); align-self: flex-end; }
         .a { background: var(--bubble); align-self: flex-start; }
         
-        /* Ad Space */
-        .ad-container { height: 50px; background: #f5f5f5; border-top: 1px solid #ddd; display: flex; align-items: center; justify-content: center; font-size: 11px; color: #888; }
+        .ad-container { height: 40px; background: #222; border-top: 1px solid #444; display: flex; align-items: center; justify-content: center; font-size: 12px; color: #777; }
         
-        /* Footer */
-        .bottom-bar { padding: 15px; border-top: 1px solid #eee; display: flex; gap: 10px; align-items: center; }
-        input { flex: 1; padding: 12px; border-radius: 20px; border: 1px solid #ccc; outline: none; }
+        .bottom-bar { padding: 15px; display: flex; gap: 10px; background: #1e1e1e; align-items: center; }
+        input { flex: 1; padding: 12px; border-radius: 20px; border: none; background: #333; color: white; }
     </style>
 </head>
 <body>
@@ -39,15 +32,18 @@
         <div class="header">
             <button class="icon-btn" onclick="document.getElementById('panel').style.display='block'">⚙️</button>
             <div class="title">DUCKIE TALK</div>
-            <button class="icon-btn" onclick="alert('Stickers: 🦆, 🐥, 🐤, 🐣, 🦢')">🎭</button>
+            <button class="icon-btn" onclick="showStickers()">🎭</button>
         </div>
 
         <div id="panel">
             <h3>Settings</h3>
-            <label>Theme: </label>
-            <button onclick="document.body.className=''">Light</button>
-            <button onclick="document.body.className='dark'">Dark</button>
-            <br><br><button onclick="document.getElementById('panel').style.display='none'">Close</button>
+            <label>Language:</label>
+            <select id="lang">
+                <option value="en">English</option>
+                <option value="es">Español</option>
+            </select>
+            <br><br>
+            <button onclick="document.getElementById('panel').style.display='none'">Save & Close</button>
         </div>
 
         <div id="chat"></div>
@@ -68,6 +64,7 @@
             const chat = document.getElementById('chat');
             const texto = input.value;
             if(!texto) return;
+            
             chat.innerHTML += `<div class="message u">${texto}</div>`;
             input.value = "";
             chat.scrollTop = chat.scrollHeight;
@@ -79,15 +76,23 @@
                     body: JSON.stringify({ contents: [{ parts: [{ text: texto }] }] })
                 });
                 const data = await response.json();
-                const respuesta = data.candidates?.[0]?.content?.parts?.[0]?.text || "Duckie is thinking...";
+                const respuesta = data.candidates?.[0]?.content?.parts?.[0]?.text || "Duckie is ready to talk!";
                 chat.innerHTML += `<div class="message a">${respuesta}</div>`;
                 chat.scrollTop = chat.scrollHeight;
-            } catch(e) { chat.innerHTML += `<div class="message a">Oops! Error connecting. Try again.</div>`; }
+            } catch(e) {
+                chat.innerHTML += `<div class="message a">Connection error. Please check your network.</div>`;
+            }
+        }
+
+        function showStickers() {
+            alert("Available Stickers: 🦆, 🐥, 🐤, 🐣, 🦢");
         }
 
         const rec = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
         rec.onresult = (e) => { document.getElementById('in').value = e.results[0][0].transcript; };
-        document.getElementById('mic').onclick = () => { try { rec.start(); } catch(err) { console.log(err); } };
+        document.getElementById('mic').onclick = () => { 
+            try { rec.start(); } catch(err) { console.log("Mic access issues."); } 
+        };
     </script>
 </body>
 </html>
