@@ -67,7 +67,7 @@
             if (!text) return;
             addMessage(text, 'user');
             input.value = "";
-            addMessage("Pensando...", 'ai');
+            addMessage("...", 'ai');
             try {
                 const response = await fetch(API_URL, {
                     method: 'POST',
@@ -79,20 +79,22 @@
                 if (data.candidates && data.candidates[0].content.parts[0].text) {
                     addMessage(data.candidates[0].content.parts[0].text, 'ai');
                 } else {
-                    addMessage("No recibí respuesta, intenta de nuevo.", 'ai');
+                    addMessage("No recibí respuesta.", 'ai');
                 }
             } catch (e) {
-                document.getElementById('chat-container').lastElementChild.innerText = "Error de red. Revisa tu conexión.";
+                document.getElementById('chat-container').lastElementChild.innerText = "Error: Verifica tu conexión.";
             }
         }
         function startVoice() {
-            const rec = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-            rec.lang = 'es-ES';
-            rec.start();
-            rec.onresult = (e) => {
-                document.getElementById('user-input').value = e.results[0][0].transcript;
-                sendMessage();
-            };
+            try {
+                const rec = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+                rec.lang = 'es-ES';
+                rec.start();
+                rec.onresult = (e) => {
+                    document.getElementById('user-input').value = e.results[0][0].transcript;
+                    sendMessage();
+                };
+            } catch(e) { addMessage("Voz no soportada.", 'ai'); }
         }
     </script>
 </body>
