@@ -5,98 +5,51 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Duckie Talk Pro ^+^_</title>
+    <!-- Firebase SDK v11.6.1 -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+
+        // Configuración de Firebase - Reemplaza con tus credenciales reales
+        const firebaseConfig = {
+            apiKey: "TU_API_KEY_FIREBASE",
+            authDomain: "TU_PROJECT_ID.firebaseapp.com",
+            projectId: "TU_PROJECT_ID",
+            storageBucket: "TU_PROJECT_ID.appspot.com",
+            messagingSenderId: "TU_ID",
+            appId: "TU_APP_ID"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        // Autenticación anónima para Hito 3
+        signInAnonymously(auth).then(() => console.log("Duckie autenticado"));
+
+        window.saveData = async (userMsg, aiMsg) => {
+            try {
+                await addDoc(collection(db, "conversations"), {
+                    user: userMsg,
+                    ai: aiMsg,
+                    timestamp: serverTimestamp()
+                });
+            } catch (e) { console.error("Error al guardar:", e); }
+        };
+    </script>
     <style>
-        /* Estilos originales restaurados y optimizados */
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        
-        body { 
-            margin: 0; 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
-            height: 100vh; 
-            display: flex; 
-            flex-direction: column; 
-            background: linear-gradient(135deg, #4a148c 0%, #7b1fa2 100%);
-            background-attachment: fixed;
-            overflow: hidden;
-        }
-
-        .app-container { 
-            display: flex; 
-            flex-direction: column; 
-            height: 100%; 
-            background: rgba(255, 255, 255, 0.85); 
-            width: 100%; 
-            backdrop-filter: blur(15px);
-        }
-
-        @media (min-width: 768px) { 
-            .app-container { 
-                max-width: 800px; 
-                margin: 0 auto; 
-                border-left: 1px solid rgba(255,255,255,0.3); 
-                border-right: 1px solid rgba(255,255,255,0.3); 
-                box-shadow: 0 0 50px rgba(0,0,0,0.5); 
-            } 
-        }
-
-        .header { 
-            padding: 20px; 
-            text-align: center; 
-            font-size: 24px; 
-            font-weight: 800; 
-            color: #4a148c; 
-            background: rgba(255, 255, 255, 0.95);
-            border-bottom: 2px solid #e1bee7;
-        }
-
-        #chat { 
-            flex: 1; 
-            padding: 20px; 
-            overflow-y: auto; 
-            display: flex; 
-            flex-direction: column; 
-            gap: 15px; 
-        }
-
-        .message { 
-            padding: 15px 20px; 
-            border-radius: 20px; 
-            max-width: 80%; 
-            font-size: 16px; 
-            line-height: 1.4;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-
-        .u { background: #6a1b9a; color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
-        .a { background: #fff; color: #333; align-self: flex-start; border-bottom-left-radius: 4px; border: 1px solid #d1c4e9; }
-
-        .input-area { 
-            padding: 20px; 
-            background: #fff; 
-            display: flex; 
-            gap: 10px; 
-            align-items: center; 
-            border-top: 2px solid #e1bee7;
-        }
-
-        input { 
-            flex: 1; 
-            padding: 15px; 
-            border-radius: 30px; 
-            border: 2px solid #d1c4e9; 
-            font-size: 16px; 
-            outline: none; 
-        }
-
-        button { 
-            padding: 15px 25px; 
-            border-radius: 30px; 
-            background: #4a148c; 
-            color: white; 
-            border: none; 
-            font-weight: bold; 
-            cursor: pointer; 
-        }
+        * { box-sizing: border-box; }
+        body { margin: 0; height: 100vh; background: linear-gradient(135deg, #4a148c 0%, #7b1fa2 100%); display: flex; justify-content: center; align-items: center; font-family: sans-serif; }
+        .app-container { width: 100%; height: 100%; max-width: 500px; background: rgba(255, 255, 255, 0.9); display: flex; flex-direction: column; box-shadow: 0 0 30px rgba(0,0,0,0.3); }
+        .header { padding: 20px; text-align: center; font-size: 22px; font-weight: bold; color: #4a148c; border-bottom: 2px solid #e1bee7; }
+        #chat { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
+        .message { padding: 12px 16px; border-radius: 15px; max-width: 85%; }
+        .u { background: #6a1b9a; color: white; align-self: flex-end; }
+        .a { background: #f3e5f5; color: #333; align-self: flex-start; }
+        .input-area { padding: 15px; display: flex; gap: 10px; border-top: 1px solid #ccc; }
+        input { flex: 1; padding: 12px; border-radius: 20px; border: 1px solid #ccc; outline: none; }
+        button { padding: 10px 20px; border-radius: 20px; background: #4a148c; color: white; border: none; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -104,14 +57,13 @@
         <div class="header">Duckie Talk Pro 🦆✨</div>
         <div id="chat"></div>
         <div class="input-area">
-            <input type="text" id="in" placeholder="Dile algo a Duckie...">
+            <input type="text" id="in" placeholder="Escribe algo...">
             <button onclick="send()">Enviar</button>
         </div>
     </div>
-
     <script>
-        const KEY = "AIzaSyBruM7_YMp6qkYcez9J5Hb6h3BgCyhDyHg";
-        const URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${KEY}`;
+        const API_KEY = "AIzaSyBruM7_YMp6qkYcez9J5Hb6h3BgCyhDyHg";
+        const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
 
         async function send() {
             const input = document.getElementById('in');
@@ -121,26 +73,21 @@
             const chat = document.getElementById('chat');
             chat.innerHTML += `<div class="message u">${txt}</div>`;
             input.value = "";
-            chat.scrollTop = chat.scrollHeight;
-
+            
             try {
-                const res = await fetch(URL, { 
+                const res = await fetch(API_URL, { 
                     method: 'POST', 
                     headers: {'Content-Type': 'application/json'}, 
                     body: JSON.stringify({ contents: [{ parts: [{ text: txt }] }] }) 
                 });
                 const json = await res.json();
-                
                 if(json.candidates) {
                     const reply = json.candidates[0].content.parts[0].text;
                     chat.innerHTML += `<div class="message a">${reply}</div>`;
-                } else {
-                    chat.innerHTML += `<div class="message a">Duckie está descansando, intenta en un segundo.</div>`;
+                    // Guardar en Firebase (Hito 3)
+                    if(window.saveData) window.saveData(txt, reply);
                 }
-            } catch(e) {
-                chat.innerHTML += `<div class="message a">Revisa tu conexión.</div>`;
-            }
-            chat.scrollTop = chat.scrollHeight;
+            } catch(e) { chat.innerHTML += `<div class="message a">Error de red.</div>`; }
         }
     </script>
 </body>
