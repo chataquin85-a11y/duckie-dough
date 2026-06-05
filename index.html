@@ -5,98 +5,65 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Duckie Talk Pro ^+^_</title>
+    <!-- Firebase SDK v11.6.1 -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+
+        // Configuración de Firebase - Base del Hito 3 y Hito 4
+        const firebaseConfig = {
+            apiKey: "TU_API_KEY_FIREBASE",
+            authDomain: "TU_PROJECT_ID.firebaseapp.com",
+            projectId: "TU_PROJECT_ID",
+            storageBucket: "TU_PROJECT_ID.appspot.com",
+            messagingSenderId: "TU_ID",
+            appId: "TU_APP_ID"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        // Autenticación para persistencia de datos
+        signInAnonymously(auth).then(() => console.log("Duckie autenticado en sistema profesional"));
+
+        // Función de persistencia de datos (Hito 3)
+        window.guardarConversacion = async (userMsg, aiMsg) => {
+            try {
+                await addDoc(collection(db, "conversations"), {
+                    user: userMsg,
+                    ai: aiMsg,
+                    timestamp: serverTimestamp()
+                });
+            } catch (e) { console.error("Error al guardar en Firebase:", e); }
+        };
+    </script>
     <style>
-        /* Estilos originales restaurados y optimizados */
+        /* Estilos visuales originales, optimizados para Desktop y Móvil */
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; height: 100vh; background: linear-gradient(135deg, #4a148c 0%, #7b1fa2 100%); display: flex; justify-content: center; align-items: center; }
         
-        body { 
-            margin: 0; 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
-            height: 100vh; 
-            display: flex; 
-            flex-direction: column; 
-            background: linear-gradient(135deg, #4a148c 0%, #7b1fa2 100%);
-            background-attachment: fixed;
+        .app-container { 
+            width: 100%; height: 100%; max-width: 900px; 
+            background: rgba(255, 255, 255, 0.95); 
+            display: flex; flex-direction: column; 
+            box-shadow: 0 0 40px rgba(0,0,0,0.3);
             overflow: hidden;
         }
 
-        .app-container { 
-            display: flex; 
-            flex-direction: column; 
-            height: 100%; 
-            background: rgba(255, 255, 255, 0.85); 
-            width: 100%; 
-            backdrop-filter: blur(15px);
-        }
-
-        @media (min-width: 768px) { 
-            .app-container { 
-                max-width: 800px; 
-                margin: 0 auto; 
-                border-left: 1px solid rgba(255,255,255,0.3); 
-                border-right: 1px solid rgba(255,255,255,0.3); 
-                box-shadow: 0 0 50px rgba(0,0,0,0.5); 
-            } 
-        }
-
-        .header { 
-            padding: 20px; 
-            text-align: center; 
-            font-size: 24px; 
-            font-weight: 800; 
-            color: #4a148c; 
-            background: rgba(255, 255, 255, 0.95);
-            border-bottom: 2px solid #e1bee7;
-        }
-
-        #chat { 
-            flex: 1; 
-            padding: 20px; 
-            overflow-y: auto; 
-            display: flex; 
-            flex-direction: column; 
-            gap: 15px; 
-        }
-
-        .message { 
-            padding: 15px 20px; 
-            border-radius: 20px; 
-            max-width: 80%; 
-            font-size: 16px; 
-            line-height: 1.4;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-
+        .header { padding: 20px; text-align: center; font-size: 24px; font-weight: bold; color: #4a148c; border-bottom: 2px solid #e1bee7; }
+        
+        #chat { flex: 1; padding: 25px; overflow-y: auto; display: flex; flex-direction: column; gap: 20px; }
+        
+        .message { padding: 15px 20px; border-radius: 18px; max-width: 75%; font-size: 16px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         .u { background: #6a1b9a; color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
-        .a { background: #fff; color: #333; align-self: flex-start; border-bottom-left-radius: 4px; border: 1px solid #d1c4e9; }
-
-        .input-area { 
-            padding: 20px; 
-            background: #fff; 
-            display: flex; 
-            gap: 10px; 
-            align-items: center; 
-            border-top: 2px solid #e1bee7;
-        }
-
-        input { 
-            flex: 1; 
-            padding: 15px; 
-            border-radius: 30px; 
-            border: 2px solid #d1c4e9; 
-            font-size: 16px; 
-            outline: none; 
-        }
-
-        button { 
-            padding: 15px 25px; 
-            border-radius: 30px; 
-            background: #4a148c; 
-            color: white; 
-            border: none; 
-            font-weight: bold; 
-            cursor: pointer; 
-        }
+        .a { background: #f3e5f5; color: #333; align-self: flex-start; border-bottom-left-radius: 4px; border: 1px solid #d1c4e9; }
+        .typing { font-style: italic; color: #7b1fa2; padding: 10px; font-size: 14px; }
+        
+        .input-area { padding: 20px; display: flex; gap: 15px; border-top: 1px solid #eee; background: #fff; }
+        input { flex: 1; padding: 15px; border-radius: 30px; border: 1px solid #ddd; outline: none; font-size: 16px; }
+        button { padding: 10px 25px; border-radius: 30px; background: #4a148c; color: white; border: none; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -104,41 +71,48 @@
         <div class="header">Duckie Talk Pro 🦆✨</div>
         <div id="chat"></div>
         <div class="input-area">
-            <input type="text" id="in" placeholder="Dile algo a Duckie...">
-            <button onclick="send()">Enviar</button>
+            <input type="text" id="in" placeholder="Escribe tu mensaje aquí...">
+            <button onclick="enviarMensaje()">Enviar</button>
         </div>
     </div>
-
     <script>
-        const KEY = "AIzaSyBruM7_YMp6qkYcez9J5Hb6h3BgCyhDyHg";
-        const URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${KEY}`;
+        const API_KEY = "AIzaSyBruM7_YMp6qkYcez9J5Hb6h3BgCyhDyHg";
+        const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
 
-        async function send() {
+        async function enviarMensaje() {
             const input = document.getElementById('in');
-            const txt = input.value.trim();
-            if(!txt) return;
+            const texto = input.value.trim();
+            if(!texto) return;
             
             const chat = document.getElementById('chat');
-            chat.innerHTML += `<div class="message u">${txt}</div>`;
+            chat.innerHTML += `<div class="message u">${texto}</div>`;
             input.value = "";
+            
+            // Indicador de "Escribiendo"
+            const typing = document.createElement('div');
+            typing.className = 'typing';
+            typing.innerText = "Duckie está escribiendo...";
+            chat.appendChild(typing);
             chat.scrollTop = chat.scrollHeight;
 
             try {
-                const res = await fetch(URL, { 
+                const res = await fetch(API_URL, { 
                     method: 'POST', 
                     headers: {'Content-Type': 'application/json'}, 
-                    body: JSON.stringify({ contents: [{ parts: [{ text: txt }] }] }) 
+                    body: JSON.stringify({ contents: [{ parts: [{ text: texto }] }] }) 
                 });
-                const json = await res.json();
+                const data = await res.json();
+                typing.remove();
                 
-                if(json.candidates) {
-                    const reply = json.candidates[0].content.parts[0].text;
-                    chat.innerHTML += `<div class="message a">${reply}</div>`;
-                } else {
-                    chat.innerHTML += `<div class="message a">Duckie está descansando, intenta en un segundo.</div>`;
+                if(data.candidates) {
+                    const respuesta = data.candidates[0].content.parts[0].text;
+                    chat.innerHTML += `<div class="message a">${respuesta}</div>`;
+                    // Persistencia en Firebase (Hito 3)
+                    if(window.guardarConversacion) window.guardarConversacion(texto, respuesta);
                 }
-            } catch(e) {
-                chat.innerHTML += `<div class="message a">Revisa tu conexión.</div>`;
+            } catch(e) { 
+                typing.remove();
+                chat.innerHTML += `<div class="message a">Error de conexión: ${e.message}</div>`; 
             }
             chat.scrollTop = chat.scrollHeight;
         }
