@@ -6,64 +6,105 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Duckie Talk ^+^_</title>
     <style>
-        * { box-sizing: border-box; }
-        body { 
-            margin: 0; font-family: sans-serif; height: 100vh; display: flex; flex-direction: column;
-            background: url('IMG_0635.jpeg') no-repeat center center fixed; background-size: cover;
-        }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        :root { --bg-color: #f0ede5; --chat-bg: #ffffff; }
+        body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, sans-serif; height: 100vh; display: flex; flex-direction: column; background: var(--bg-color); transition: background 0.3s; }
+        
+        .header { padding: 10px; display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.5); }
+        .controls { display: flex; gap: 5px; }
+        select { padding: 5px; border-radius: 10px; border: none; background: white; }
+        
         #chat-container { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
-        .message { padding: 10px 15px; border-radius: 15px; max-width: 80%; background: white; font-size: 14px; }
-        .user-msg { background: #76ff03; align-self: flex-end; }
-        .ai-msg { background: #ffffff; align-self: flex-start; }
-        .input-area { padding: 10px; background: white; display: flex; gap: 5px; }
-        input { flex: 1; padding: 10px; border-radius: 20px; border: 1px solid #ccc; outline: none; }
-        button { padding: 10px; border-radius: 20px; border: none; background: #007bff; color: white; cursor: pointer; }
+        .message { padding: 10px 15px; border-radius: 15px; max-width: 80%; background: var(--chat-bg); font-size: 15px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+        .user-msg { background: #dcf8c6; align-self: flex-end; }
+        .ai-msg { background: var(--chat-bg); align-self: flex-start; }
+        
+        .input-area { padding: 10px; background: white; display: flex; gap: 8px; border-top: 1px solid #ddd; align-items: center; }
+        input { flex: 1; padding: 12px; border-radius: 20px; border: 1px solid #ccc; outline: none; }
+        .btn { padding: 10px 15px; border-radius: 20px; background: #075e54; color: white; border: none; cursor: pointer; }
     </style>
 </head>
 <body>
+    <div class="header">
+        <div class="controls">
+            <select onchange="changeTheme(this.value)">
+                <option value="#f0ede5">Clásico</option>
+                <option value="#e3f2fd">Azul Suave</option>
+                <option value="#ede7f6">Púrpura Claro</option>
+                <option value="#212121">Modo Noche</option>
+            </select>
+            <select id="ai-mode">
+                <option value="Amistoso">Amistoso</option>
+                <option value="Profesional">Profesional</option>
+                <option value="Creativo">Creativo</option>
+            </select>
+        </div>
+        <div class="controls">
+            <span onclick="addMessage('🦆', 'user')">🦆</span>
+            <span onclick="addMessage('✨', 'user')">✨</span>
+            <span onclick="addMessage('💜', 'user')">💜</span>
+            <span onclick="addMessage('💚', 'user')">💚</span>
+        </div>
+    </div>
+
     <div id="chat-container"></div>
+    
     <div class="input-area">
         <input type="text" id="user-input" placeholder="Dile algo a Duckie...">
-        <button onclick="sendMessage()">➤</button>
+        <button class="btn" onclick="sendMessage()">➤</button>
+        <button class="btn" onclick="startVoice()">🎤</button>
     </div>
 
     <script>
         const API_KEY = "AIzaSyBruM7_YMp6qkYcez9J5Hb6h3BgCyhDyHg";
-        // URL corregida para la API de Gemini 1.5 Flash
         const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
 
+        function changeTheme(color) {
+            document.documentElement.style.setProperty('--bg-color', color);
+        }
+
         function addMessage(text, type) {
+            const container = document.getElementById('chat-container');
             const div = document.createElement('div');
             div.className = `message ${type}-msg`;
             div.innerText = text;
-            document.getElementById('chat-container').appendChild(div);
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
         }
 
         async function sendMessage() {
             const input = document.getElementById('user-input');
-            const texto = input.value.trim();
-            if(!texto) return;
-
-            addMessage(texto, 'user');
-            input.value = "";
+            const mode = document.getElementById('ai-mode').value;
+            const text = input.value.trim();
+            if (!text) return;
             
+            addMessage(text, 'user');
+            input.value = "";
+            addMessage("Procesando...", 'ai');
+
             try {
                 const response = await fetch(API_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ contents: [{ parts: [{ text: texto }] }] })
+                    body: JSON.stringify({ contents: [{ parts: [{ text: `Actúa en modo ${mode}. Usuario dijo: ${text}` }] }] })
                 });
-                
                 const data = await response.json();
-                
-                if (data.candidates && data.candidates[0].content.parts[0].text) {
-                    addMessage(data.candidates[0].content.parts[0].text, 'ai');
-                } else {
-                    throw new Error("Respuesta inválida del servidor");
-                }
-            } catch (err) {
-                addMessage("Error técnico: " + err.message + ". Verifica el código.", 'ai');
+                document.getElementById('chat-container').lastElementChild.remove();
+                addMessage(data.candidates[0].content.parts[0].text, 'ai');
+            } catch (e) {
+                document.getElementById('chat-container').lastElementChild.remove();
+                addMessage("Error técnico. Verifica tu conexión.", 'ai');
             }
+        }
+
+        function startVoice() {
+            const rec = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+            rec.lang = 'es-ES';
+            rec.start();
+            rec.onresult = (e) => {
+                document.getElementById('user-input').value = e.results[0][0].transcript;
+                sendMessage();
+            };
         }
     </script>
 </body>
