@@ -3,15 +3,14 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Duckie Talk Pro ^+^_</title>
-    <!-- Firebase SDK v11.6.1 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Duckie Talk Pro - Hito 4 (Desktop/Mobile)</title>
+    <!-- Firebase SDK -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
-        // Configuración de Firebase - Base del Hito 3 y Hito 4
         const firebaseConfig = {
             apiKey: "TU_API_KEY_FIREBASE",
             authDomain: "TU_PROJECT_ID.firebaseapp.com",
@@ -20,59 +19,56 @@
             messagingSenderId: "TU_ID",
             appId: "TU_APP_ID"
         };
-
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const auth = getAuth(app);
+        signInAnonymously(auth);
 
-        // Autenticación para persistencia de datos
-        signInAnonymously(auth).then(() => console.log("Duckie autenticado en sistema profesional"));
-
-        // Función de persistencia de datos (Hito 3)
-        window.guardarConversacion = async (userMsg, aiMsg) => {
-            try {
-                await addDoc(collection(db, "conversations"), {
-                    user: userMsg,
-                    ai: aiMsg,
-                    timestamp: serverTimestamp()
-                });
-            } catch (e) { console.error("Error al guardar en Firebase:", e); }
+        window.guardarConversacion = async (u, a) => {
+            await addDoc(collection(db, "conversations"), { user: u, ai: a, timestamp: serverTimestamp() });
         };
     </script>
     <style>
-        /* Estilos visuales originales, optimizados para Desktop y Móvil */
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; height: 100vh; background: linear-gradient(135deg, #4a148c 0%, #7b1fa2 100%); display: flex; justify-content: center; align-items: center; }
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: -apple-system, sans-serif; height: 100vh; background: #4a148c; display: flex; justify-content: center; align-items: center; }
         
         .app-container { 
-            width: 100%; height: 100%; max-width: 900px; 
-            background: rgba(255, 255, 255, 0.95); 
-            display: flex; flex-direction: column; 
-            box-shadow: 0 0 40px rgba(0,0,0,0.3);
-            overflow: hidden;
+            width: 95%; height: 95%; max-width: 1000px; 
+            background: #fff; display: flex; flex-direction: column; 
+            border-radius: 20px; overflow: hidden; box-shadow: 0 10px 50px rgba(0,0,0,0.5);
         }
+        
+        .header { padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; background: #fdfdfd; }
+        .left-controls { display: flex; gap: 10px; align-items: center; }
+        .btn-sm { padding: 8px 12px; font-size: 13px; cursor: pointer; border-radius: 8px; border: 1px solid #ddd; background: #fff; }
+        
+        #chat { flex: 1; padding: 30px; overflow-y: auto; display: flex; flex-direction: column; gap: 20px; background: #fafafa; }
+        .message { padding: 15px 20px; border-radius: 20px; max-width: 70%; font-size: 16px; }
+        .u { background: #6a1b9a; color: white; align-self: flex-end; }
+        .a { background: #eee; color: #333; align-self: flex-start; }
+        .typing { font-size: 14px; color: #888; font-style: italic; padding-left: 20px; }
 
-        .header { padding: 20px; text-align: center; font-size: 24px; font-weight: bold; color: #4a148c; border-bottom: 2px solid #e1bee7; }
-        
-        #chat { flex: 1; padding: 25px; overflow-y: auto; display: flex; flex-direction: column; gap: 20px; }
-        
-        .message { padding: 15px 20px; border-radius: 18px; max-width: 75%; font-size: 16px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .u { background: #6a1b9a; color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
-        .a { background: #f3e5f5; color: #333; align-self: flex-start; border-bottom-left-radius: 4px; border: 1px solid #d1c4e9; }
-        .typing { font-style: italic; color: #7b1fa2; padding: 10px; font-size: 14px; }
-        
-        .input-area { padding: 20px; display: flex; gap: 15px; border-top: 1px solid #eee; background: #fff; }
-        input { flex: 1; padding: 15px; border-radius: 30px; border: 1px solid #ddd; outline: none; font-size: 16px; }
-        button { padding: 10px 25px; border-radius: 30px; background: #4a148c; color: white; border: none; font-weight: bold; cursor: pointer; }
+        .input-area { padding: 20px; display: flex; gap: 15px; border-top: 1px solid #eee; align-items: center; background: #fff; }
+        .send-btn { background: #4a148c; color: white; padding: 12px 25px; border-radius: 25px; border: none; cursor: pointer; }
+        input { flex: 1; padding: 15px; border-radius: 25px; border: 1px solid #ccc; outline: none; }
+        .mic-btn { background: #e1bee7; border-radius: 50%; width: 50px; height: 50px; border: none; font-size: 22px; cursor: pointer; }
     </style>
 </head>
 <body>
     <div class="app-container">
-        <div class="header">Duckie Talk Pro 🦆✨</div>
+        <div class="header">
+            <div class="left-controls">
+                <button class="btn-sm" onclick="alert('Configuración')">⚙️</button>
+                <select id="lang" class="btn-sm"><option value="es">ES</option><option value="en">EN</option></select>
+                <button class="btn-sm">Classic</button>
+            </div>
+            <button class="btn-sm">Stickers 🦆</button>
+        </div>
         <div id="chat"></div>
         <div class="input-area">
-            <input type="text" id="in" placeholder="Escribe tu mensaje aquí...">
-            <button onclick="enviarMensaje()">Enviar</button>
+            <button class="send-btn" onclick="enviarMensaje()">Enviar</button>
+            <input type="text" id="in" placeholder="Escribe algo...">
+            <button class="mic-btn">🎤</button>
         </div>
     </div>
     <script>
@@ -83,37 +79,28 @@
             const input = document.getElementById('in');
             const texto = input.value.trim();
             if(!texto) return;
-            
             const chat = document.getElementById('chat');
             chat.innerHTML += `<div class="message u">${texto}</div>`;
             input.value = "";
             
-            // Indicador de "Escribiendo"
             const typing = document.createElement('div');
             typing.className = 'typing';
-            typing.innerText = "Duckie está escribiendo...";
+            typing.innerText = "Duckie escribiendo...";
             chat.appendChild(typing);
-            chat.scrollTop = chat.scrollHeight;
 
             try {
                 const res = await fetch(API_URL, { 
-                    method: 'POST', 
-                    headers: {'Content-Type': 'application/json'}, 
+                    method: 'POST', headers: {'Content-Type': 'application/json'}, 
                     body: JSON.stringify({ contents: [{ parts: [{ text: texto }] }] }) 
                 });
                 const data = await res.json();
                 typing.remove();
-                
                 if(data.candidates) {
-                    const respuesta = data.candidates[0].content.parts[0].text;
-                    chat.innerHTML += `<div class="message a">${respuesta}</div>`;
-                    // Persistencia en Firebase (Hito 3)
-                    if(window.guardarConversacion) window.guardarConversacion(texto, respuesta);
+                    const resp = data.candidates[0].content.parts[0].text;
+                    chat.innerHTML += `<div class="message a">${resp}</div>`;
+                    if(window.guardarConversacion) window.guardarConversacion(texto, resp);
                 }
-            } catch(e) { 
-                typing.remove();
-                chat.innerHTML += `<div class="message a">Error de conexión: ${e.message}</div>`; 
-            }
+            } catch(e) { typing.remove(); }
             chat.scrollTop = chat.scrollHeight;
         }
     </script>
