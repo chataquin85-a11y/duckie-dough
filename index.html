@@ -38,8 +38,8 @@
     </div>
     <script>
         const API_KEY = "AIzaSyBruM7_YMp6qkYcez9J5Hb6h3BgCyhDyHg";
-        // He cambiado el modelo a uno compatible universalmente
-        const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${API_KEY}`;
+        // Modelo corregido a la versión estándar y estable
+        const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
         let history = [];
 
         function addMsg(text, type) {
