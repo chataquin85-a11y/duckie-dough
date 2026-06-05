@@ -4,67 +4,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Duckie Talk Pro - Interfaz Profesional</title>
+    <title>Duckie Talk Pro - Versión Final</title>
     <style>
-        :root { --bg: #ffffff; --primary: #4a148c; --text: #333; --bubble: #f0f0f0; }
+        :root { --bg: #ffffff; --text: #333; --primary: #4a148c; --bubble: #f0f0f0; }
         .dark { --bg: #1a1a1a; --text: #f0f0f0; --primary: #7b1fa2; --bubble: #333; }
         
-        body { margin: 0; background: #222; font-family: -apple-system, sans-serif; height: 100vh; display: flex; justify-content: center; align-items: center; }
+        body { margin: 0; background: #222; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; height: 100vh; display: flex; justify-content: center; align-items: center; }
+        .app-container { width: 100%; max-width: 500px; height: 90vh; background: var(--bg); color: var(--text); display: flex; flex-direction: column; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.6); position: relative; transition: background 0.3s; }
         
-        .app-container { 
-            width: 100%; max-width: 500px; height: 90vh; background: var(--bg); color: var(--text); 
-            display: flex; flex-direction: column; border-radius: 20px; overflow: hidden; 
-            box-shadow: 0 10px 40px rgba(0,0,0,0.6); position: relative;
-        }
-
-        /* Header con Engranaje */
+        /* Header & Settings */
         .header { padding: 15px 20px; display: flex; justify-content: space-between; border-bottom: 1px solid #ddd; align-items: center; }
-        .icon-btn { border: none; background: none; font-size: 24px; cursor: pointer; }
-
-        /* Panel de Ajustes (Engranaje) */
-        #panel { 
-            display: none; position: absolute; top: 60px; left: 20px; right: 20px; 
-            background: white; color: #333; padding: 20px; border-radius: 15px; 
-            z-index: 100; box-shadow: 0 5px 20px rgba(0,0,0,0.3); 
-        }
-
-        /* Chat */
+        .icon-btn { border: none; background: none; font-size: 24px; cursor: pointer; transition: transform 0.2s; }
+        
+        #panel { display: none; position: absolute; top: 60px; left: 20px; right: 20px; background: white; color: #333; padding: 25px; border-radius: 20px; z-index: 100; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+        
+        /* Chat Area */
         #chat { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
         .message { padding: 12px 18px; border-radius: 18px; max-width: 80%; font-size: 15px; }
         .u { background: var(--primary); color: white; align-self: flex-end; }
         .a { background: var(--bubble); align-self: flex-start; }
-
-        /* Footer */
-        .bottom-bar { padding: 15px; border-top: 1px solid #ddd; display: flex; gap: 10px; align-items: center; background: var(--bg); }
-        input { flex: 1; padding: 12px; border-radius: 25px; border: 1px solid #ccc; background: var(--bg); color: var(--text); outline: none; }
         
         /* Ad Space */
-        .ad-container { height: 60px; background: #fdfdfd; border-top: 1px solid #eee; display: flex; align-items: center; justify-content: center; font-size: 12px; color: #aaa; }
+        .ad-container { height: 60px; background: #f9f9f9; border-top: 1px solid #eee; display: flex; align-items: center; justify-content: center; font-size: 12px; color: #999; }
+        
+        /* Footer */
+        .bottom-bar { padding: 15px; border-top: 1px solid #ddd; display: flex; gap: 10px; align-items: center; background: var(--bg); }
+        input { flex: 1; padding: 14px; border-radius: 25px; border: 1px solid #ccc; background: var(--bg); color: var(--text); outline: none; }
     </style>
 </head>
 <body>
     <div class="app-container">
         <div class="header">
             <button class="icon-btn" onclick="document.getElementById('panel').style.display='block'">⚙️</button>
-            <button class="icon-btn">🦆</button>
+            <button class="icon-btn" onclick="alert('Stickers próximamente')">🦆</button>
         </div>
 
         <div id="panel">
-            <h3>Configuración</h3>
+            <h2 style="margin-top:0;">Ajustes</h2>
             <label>Idioma: </label>
             <select id="lang"><option value="es">Español</option><option value="en">English</option></select>
             <br><br>
             <label>Tema: </label>
             <button onclick="document.body.className=''">Claro</button>
             <button onclick="document.body.className='dark'">Oscuro</button>
-            <br><br><button onclick="document.getElementById('panel').style.display='none'">Cerrar</button>
+            <br><br><button onclick="document.getElementById('panel').style.display='none'" style="background:var(--primary); color:white; padding:10px 20px; border:none; border-radius:10px; cursor:pointer;">Cerrar</button>
         </div>
 
         <div id="chat"></div>
         <div class="ad-container">Publicidad - Monetización Activa</div>
+        
         <div class="bottom-bar">
             <button class="icon-btn" onclick="enviar()">➤</button>
-            <input type="text" id="in" placeholder="Escribe algo...">
+            <input type="text" id="in" placeholder="Dile algo a Duckie...">
             <button class="icon-btn" id="mic">🎤</button>
         </div>
     </div>
@@ -89,7 +80,8 @@
                 const data = await response.json();
                 const respuesta = data.candidates[0].content.parts[0].text;
                 chat.innerHTML += `<div class="message a">${respuesta}</div>`;
-            } catch(e) { chat.innerHTML += `<div class="message a">Duckie está trabajando.</div>`; }
+                chat.scrollTop = chat.scrollHeight;
+            } catch(e) { chat.innerHTML += `<div class="message a">Error de conexión.</div>`; }
         }
 
         const rec = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
